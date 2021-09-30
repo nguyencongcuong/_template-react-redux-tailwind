@@ -14,7 +14,9 @@ function App() {
 				<Slide
 					options={{
 						autoPlay: false,
-						minHeight: "100vh",
+						minHeight: "30vh",
+						imagesEachSlide: 2,
+						nav: true,
 					}}
 					imageList={[
 						"https://unsplash.com/photos/9pO3LgH-9-Y/download?force=true&w=1920",
@@ -23,9 +25,10 @@ function App() {
 						"https://unsplash.com/photos/SYZYEoEF2sk/download?force=true&w=1920"
 					]}
 					nodeList={[
-						<Test text={`This is some text on the slide`}/>,
-						<Test text={`text 2`}/>,
-						<Test text={`text 3`}/>
+						<Test text={`image 1`}/>,
+						<Test text={`image 2`}/>,
+						<Test text={`image 3`}/>,
+						<Test text={`image 4`}/>
 					]}
 				/>
 			
