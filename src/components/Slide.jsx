@@ -138,8 +138,9 @@ function Slide({imageList, nodeList, options}) {
 	function SlideMultiple() {
 		
 		let multipleImageList = _.chunk(imageList, imagesEachSlide)
+		let multipleNodeList = _.chunk(nodeList, imagesEachSlide)
 		
-		function ImageItem({imageUrl, imageIndex, nodeIndex}) {
+		function ImageItem({imageUrl, imageIndex, nodeArray}) {
 			return (
 				<div
 					key={`img-${imageIndex}`}
@@ -155,11 +156,11 @@ function Slide({imageList, nodeList, options}) {
 					{/*Elements on Each Slides*/}
 					{
 						<div
-							key={`node-${nodeIndex}`}
+							key={`node-${imageIndex}`}
 							style={{minHeight: minHeight, height: minHeight}}
 							className={`p-24`}
 						>
-							{nodeList[nodeIndex]}
+							{nodeArray[imageIndex]}
 						</div>
 					}
 				
@@ -167,12 +168,12 @@ function Slide({imageList, nodeList, options}) {
 			)
 		}
 		
-		function SlideItem({imageArray}) {
+		function SlideItem({imageArray, nodeArray}) {
 			
 			const slideItem = () => {
 				let arr = []
 				for (let i = 0; i < imagesEachSlide; i++) {
-					let item = <ImageItem key={i} imageUrl={imageArray[i]} imageIndex={i} nodeIndex={i} />
+					let item = <ImageItem key={i} imageUrl={imageArray[i]} imageIndex={i} nodeArray={nodeArray} />
 					arr.push(item)
 				}
 				return arr
@@ -190,19 +191,10 @@ function Slide({imageList, nodeList, options}) {
 				{
 					multipleImageList.map((a,i) => {
 						return (
-								activeIndex === i && <SlideItem key={i} imageArray={multipleImageList[i]}/>
+								activeIndex === i && <SlideItem key={i} imageArray={multipleImageList[i]} nodeArray={multipleNodeList[i]}/>
 						)
 					})
 				}
-				
-				{/*<div className={`grid grid-cols-2 gap-1`}>*/}
-				{/*	<ImageItem imageUrl={imageList[0]} imageIndex={0} nodeIndex={0} />*/}
-				{/*	<ImageItem imageUrl={imageList[1]} imageIndex={1} nodeIndex={1} />*/}
-				{/*</div>*/}
-				{/*<div className={`grid grid-cols-2 gap-1`}>*/}
-				{/*	<ImageItem imageUrl={imageList[3]} imageIndex={3} nodeIndex={3} />*/}
-				{/*	<ImageItem imageUrl={imageList[4]} imageIndex={4} nodeIndex={4} />*/}
-				{/*</div>*/}
 			</React.Fragment>
 		)
 	}
