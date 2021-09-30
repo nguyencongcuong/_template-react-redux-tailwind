@@ -1,6 +1,8 @@
 import React, {useCallback, useEffect, useState} from "react";
 import {HiArrowLeft, HiArrowRight} from "react-icons/hi";
 
+var _ = require("lodash")
+
 function Slide({imageList, nodeList, options}) {
 	
 	// OPTIONS
@@ -36,7 +38,8 @@ function Slide({imageList, nodeList, options}) {
 	useEffect(() => {
 		let slideNumber = Math.round(imageList.length / imagesEachSlide)
 		setSlideCount(slideNumber)
-	},[imagesEachSlide, imageList])
+		console.log("active index: " + activeIndex)
+	}, [imagesEachSlide, imageList, activeIndex])
 	
 	// HANDLE DOTS
 	function Dots() {
@@ -54,7 +57,7 @@ function Slide({imageList, nodeList, options}) {
 		function handleDots() {
 			let dots = [];
 			for (let i = 0; i < slideCount; i++) {
-				let dot = <Dot index={i} />
+				let dot = <Dot key={i} index={i}/>
 				dots.push(dot)
 			}
 			return dots
@@ -64,7 +67,7 @@ function Slide({imageList, nodeList, options}) {
 			<div className="absolute right-10 bottom-1 left-10 flex flex-row flex-wrap justify-center items-center">
 				{handleDots()}
 			</div>
-			)
+		)
 	}
 	
 	// HANDLE NAVIGATION
@@ -132,93 +135,75 @@ function Slide({imageList, nodeList, options}) {
 	}
 	
 	// SLIDES WITH SINGLE IMAGE
-	function SlideDouble() {
+	function SlideMultiple() {
 		
-		let doubleImageList = []
-		let doubleNodeList = []
-		let nodeCount = 0
+		let multipleImageList = _.chunk(imageList, imagesEachSlide)
 		
-		for (let i = 0; i < imageList.length; i += 2) {
-			let arr = [imageList[i], imageList[i + 1]]
-			doubleImageList.push(arr)
+		function ImageItem({imageUrl, imageIndex, nodeIndex}) {
+			return (
+				<div
+					key={`img-${imageIndex}`}
+					style={{
+						backgroundImage: `url(${imageUrl}) ${backgroundImageGradientColor && "," + backgroundImageGradientColor}`,
+						backgroundBlendMode: backgroundBlendMode,
+						backgroundColor: backgroundColor,
+						minHeight: minHeight,
+					}}
+					className={`block animate-fadeIn bg-center bg-cover bg-no-repeat`}
+				>
+					
+					{/*Elements on Each Slides*/}
+					{
+						<div
+							key={`node-${nodeIndex}`}
+							style={{minHeight: minHeight, height: minHeight}}
+							className={`p-24`}
+						>
+							{nodeList[nodeIndex]}
+						</div>
+					}
+				
+				</div>
+			)
 		}
 		
-		for (let i = 0; i < nodeList.length; i +=2) {
-			let arr = [nodeList[i], nodeList[i + 1]]
-				doubleNodeList.push(arr)
+		function SlideItem({imageArray}) {
+			
+			const slideItem = () => {
+				let arr = []
+				for (let i = 0; i < imagesEachSlide; i++) {
+					let item = <ImageItem key={i} imageUrl={imageArray[i]} imageIndex={i} nodeIndex={i} />
+					arr.push(item)
+				}
+				return arr
+			}
+			
+			return (
+				<div className={`grid grid-cols-${imagesEachSlide} gap-1`}>
+					{slideItem()}
+				</div>
+			)
 		}
-		
 		
 		return (
-			<>
+			<React.Fragment>
 				{
-					doubleImageList.map((a, b) => {
+					multipleImageList.map((a,i) => {
 						return (
-							<div className={`grid grid-cols-2 gap-1`}>
-								
-								{/*Slide 1*/}
-								<div
-									key={`slide1-img-${b}`}
-									style={{
-										backgroundImage: `url(${a[0]}) ${backgroundImageGradientColor && "," + backgroundImageGradientColor}`,
-										backgroundBlendMode: backgroundBlendMode,
-										backgroundColor: backgroundColor,
-										minHeight: minHeight,
-									}}
-									className={`
-										${b === activeIndex ? "block animate-fadeIn" : "hidden"}
-										bg-center bg-cover bg-no-repeat
-									`}
-								>
-									
-									{/*Elements on Each Slides*/}
-									{
-										<div
-											key={`slide-node-1-${b}`}
-											style={{minHeight: minHeight, height: minHeight}}
-											className={`p-24`}
-										>
-											{nodeList[nodeCount]}
-											{nodeCount++}
-										</div>
-									}
-								
-								</div>
-								
-								{/*Slide 2*/}
-								<div
-									key={`slide2-img-${b}`}
-									style={{
-										backgroundImage: `url(${a[1]}) ${backgroundImageGradientColor && "," + backgroundImageGradientColor}`,
-										backgroundBlendMode: backgroundBlendMode,
-										backgroundColor: backgroundColor,
-										minHeight: minHeight,
-									}}
-									className={`
-										${b === activeIndex ? "block animate-fadeIn" : "hidden"}
-										bg-center bg-cover bg-no-repeat
-									`}
-								>
-									
-									{/*Elements on Each Slides*/}
-									{
-										<div
-											key={`slide-node-2-${b}`}
-											style={{minHeight: minHeight, height: minHeight}}
-											className={`p-24`}
-										>
-											{nodeList[nodeCount]}
-											{nodeCount++}
-										</div>
-									}
-								
-								</div>
-								
-							</div>
+								activeIndex === i && <SlideItem key={i} imageArray={multipleImageList[i]}/>
 						)
 					})
 				}
-			</>
+				
+				{/*<div className={`grid grid-cols-2 gap-1`}>*/}
+				{/*	<ImageItem imageUrl={imageList[0]} imageIndex={0} nodeIndex={0} />*/}
+				{/*	<ImageItem imageUrl={imageList[1]} imageIndex={1} nodeIndex={1} />*/}
+				{/*</div>*/}
+				{/*<div className={`grid grid-cols-2 gap-1`}>*/}
+				{/*	<ImageItem imageUrl={imageList[3]} imageIndex={3} nodeIndex={3} />*/}
+				{/*	<ImageItem imageUrl={imageList[4]} imageIndex={4} nodeIndex={4} />*/}
+				{/*</div>*/}
+			</React.Fragment>
 		)
 	}
 	
@@ -227,16 +212,13 @@ function Slide({imageList, nodeList, options}) {
 			<div className="relative">
 				
 				{/*Slides*/}
-				{
-					imagesEachSlide === 1 ? <SlideSingle/> :
-					imagesEachSlide === 2 ? <SlideDouble/> : ""
-				}
+				{imagesEachSlide === 1 ? <SlideSingle/> : <SlideMultiple/>}
 				
 				{/*Navigation*/}
-				{ (nav && !autoPlay) && <Navigation /> }
+				{(nav && !autoPlay) && <Navigation/>}
 				
 				{/*Dots*/}
-				{ dot && <Dots />}
+				{dot && <Dots/>}
 			
 			</div>
 		</section>

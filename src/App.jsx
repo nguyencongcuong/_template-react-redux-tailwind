@@ -15,14 +15,16 @@ function App() {
 					options={{
 						autoPlay: false,
 						minHeight: "30vh",
-						imagesEachSlide: 2,
+						imagesEachSlide: 3,
 						nav: true,
 					}}
 					imageList={[
 						"https://unsplash.com/photos/9pO3LgH-9-Y/download?force=true&w=1920",
 						"https://unsplash.com/photos/UqF5yLYlkRk/download?force=true&w=1920",
 						"https://unsplash.com/photos/0SsXCXqqDUY/download?force=true&w=1920",
-						"https://unsplash.com/photos/SYZYEoEF2sk/download?force=true&w=1920"
+						"https://unsplash.com/photos/SYZYEoEF2sk/download?force=true&w=1920",
+						"https://unsplash.com/photos/5bBWBxATXwI/download?force=true&w=2400",
+						"https://unsplash.com/photos/XX28rJHCUjQ/download?force=true&w=2400",
 					]}
 					nodeList={[
 						<Test text={`image 1`}/>,
