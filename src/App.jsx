@@ -14,9 +14,10 @@ function App() {
 				<Slide
 					options={{
 						autoPlay: false,
-						minHeight: "100vh",
-						imagesEachSlide: 2,
-						nav: true,
+						minHeight: "50vh",
+						imagesEachSlide: 3,
+						backgroundImageGradientColor: "linear-gradient(217deg, hsla(260, 50%, 36%, 0.6) 35%, hsla(150, 30%, 30%, 0.8))",
+						backgroundBlendMode: "screen",
 					}}
 					imageList={[
 						"https://unsplash.com/photos/AsJirOOLN_s/download?force=true&w=1920",
