@@ -1,13 +1,12 @@
 import React, {useCallback, useEffect, useState} from "react";
 import {HiArrowLeft, HiArrowRight} from "react-icons/hi";
 
-var _ = require("lodash")
+const _ = require("lodash")
 
-function Slide({imageList, nodeList, options}) {
+function Slidecy({nodes, options}) {
 	
 	// OPTIONS
-	// * imageList: array of image urls
-	// * nodeList: array of elements, components shown on each image
+	// * nodes: two-dimensional array
 	// * options: object | with default values:
 	const {
 		autoPlay = false,
@@ -26,8 +25,8 @@ function Slide({imageList, nodeList, options}) {
 	
 	// AUTOPLAY
 	const handleAutoPlay = useCallback(() => {
-		activeIndex + 1 === imageList.length ? setActiveIndex(0) : setActiveIndex(activeIndex + 1)
-	}, [activeIndex, imageList.length])
+		activeIndex + 1 === nodes.length ? setActiveIndex(0) : setActiveIndex(activeIndex + 1)
+	}, [activeIndex, nodes.length])
 	
 	// USE EFFECTS
 	useEffect(() => {
@@ -36,10 +35,10 @@ function Slide({imageList, nodeList, options}) {
 	}, [handleAutoPlay, autoPlay, options])
 	
 	useEffect(() => {
-		let slideNumber = Math.round(imageList.length / imagesEachSlide)
+		let slideNumber = Math.round(nodes.length / imagesEachSlide)
 		setSlideCount(slideNumber)
 		console.log("active index: " + activeIndex)
-	}, [imagesEachSlide, imageList, activeIndex])
+	}, [imagesEachSlide, nodes, activeIndex])
 	
 	// HANDLE DOTS
 	function Dots() {
@@ -93,125 +92,59 @@ function Slide({imageList, nodeList, options}) {
 		)
 	}
 	
-	// SLIDES WITH SINGLE IMAGE
-	function SlideSingle() {
-		return (
-			<React.Fragment>
-				{
-					imageList.map((a, b) => {
-						return (
-							<div
-								key={b}
-								style={{
-									backgroundImage: `url(${a}) ${backgroundImageGradientColor && "," + backgroundImageGradientColor}`,
-									backgroundBlendMode: backgroundBlendMode,
-									backgroundColor: backgroundColor,
-									minHeight: minHeight,
-								}}
-								className={`
-								${b === activeIndex ? "block animate-fadeIn" : "hidden"}
-								bg-center bg-cover bg-no-repeat
-							`}
-							>
-								
-								{/*Elements on Each Slides*/}
-								{
-									nodeList[b] &&
-									<div
-										key={`node-${b}`}
-										style={{minHeight: minHeight, height: minHeight}}
-										className={`p-24`}
-									>
-										{nodeList[b]}
-									</div>
-								}
-							
-							</div>
-						)
-					})
-				}
-			</React.Fragment>
-		)
-	}
-	
-	// SLIDES WITH SINGLE IMAGE
-	function SlideMultiple() {
+	// HANDLE SLIDE
+	function Slides() {
 		
-		let multipleImageList = _.chunk(imageList, imagesEachSlide)
-		let multipleNodeList = _.chunk(nodeList, imagesEachSlide)
+		let nodeChunk = _.chunk(nodes, imagesEachSlide)
 		
-		function ImageItem({imageUrl, imageIndex, nodeArray}) {
+		function Image({arraySingleImage}) { // [url, text]
 			return (
 				<div
-					key={`img-${imageIndex}`}
 					style={{
-						backgroundImage: `url(${imageUrl}) ${backgroundImageGradientColor && "," + backgroundImageGradientColor}`,
+						backgroundImage: `url(${arraySingleImage[0]}) ${backgroundImageGradientColor && "," + backgroundImageGradientColor}`,
 						backgroundBlendMode: backgroundBlendMode,
 						backgroundColor: backgroundColor,
 						minHeight: minHeight,
 					}}
 					className={`block animate-fadeIn bg-center bg-cover bg-no-repeat`}
 				>
-					
-					{/*Elements on Each Slides*/}
 					{
 						<div
-							key={`node-${imageIndex}`}
 							style={{minHeight: minHeight, height: minHeight}}
 							className={`p-24`}
 						>
-							{nodeArray[imageIndex]}
+							{arraySingleImage[1] && arraySingleImage[1]}
 						</div>
 					}
-				
 				</div>
 			)
 		}
 		
-		function SlideItem({imageArray, nodeArray}) {
+		function Slide({arraySingleSlide}) {
 			
 			const slideItem = () => {
 				let arr = []
 				for (let i = 0; i < imagesEachSlide; i++) {
-					let item = <ImageItem key={i} imageUrl={imageArray[i]} imageIndex={i} nodeArray={nodeArray} />
+					let item = <Image key={i} arraySingleImage={arraySingleSlide[i]}/>
 					arr.push(item)
 				}
 				return arr
 			}
 			
-			return (
-				<div className={`grid grid-cols-${imagesEachSlide} gap-1`}>
-					{slideItem()}
-				</div>
-			)
+			return <div className={`grid grid-cols-${imagesEachSlide} gap-1`}>{slideItem()}</div>
 		}
 		
-		return (
-			<React.Fragment>
-				{
-					multipleImageList.map((a,i) => {
-						return (
-								activeIndex === i && <SlideItem key={i} imageArray={multipleImageList[i]} nodeArray={multipleNodeList[i]}/>
-						)
-					})
-				}
-			</React.Fragment>
-		)
+		return nodeChunk.map((a, i) => activeIndex === i && <Slide key={i} arraySingleSlide={nodeChunk[i]}/>)
 	}
 	
 	return (
 		<section>
 			<div className="relative">
 				
-				{/*Slides*/}
-				{imagesEachSlide === 1 ? <SlideSingle/> : <SlideMultiple/>}
-				
-				{/*Navigation*/}
+				{<Slides/>}
 				{(nav && !autoPlay) && <Navigation/>}
-				
-				{/*Dots*/}
 				{dot && <Dots/>}
-			
+				
 			</div>
 		</section>
 	)
@@ -220,4 +153,4 @@ function Slide({imageList, nodeList, options}) {
 // built by me
 // day of starting to code: 29/9/2021
 
-export default Slide
+export default Slidecy
